@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-//ÃâÃ³: https://wergia.tistory.com/165 [º£¸£ÀÇ ÇÁ·Î±×·¡¹Ö ³ëÆ®]
+//ì¶œì²˜: https://wergia.tistory.com/165 [ë² ë¥´ì˜ í”„ë¡œê·¸ë˜ë° ë…¸íŠ¸]
 [CustomEditor(typeof(PathFinder))]
 public class PathFinderButton : Editor
 {

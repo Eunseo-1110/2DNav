@@ -5,26 +5,38 @@ using UnityEngine;
 
 public class PathFinder : MonoBehaviour
 {
-    [Header("³ëµå º¸¿©ÁÖ±â")]
+    [Header("ë…¸ë“œ ë³´ì—¬ì£¼ê¸°")]
     public bool isGizmo = true;
 
-    [Header("¸Ê »çÀÌÁî")]
+    [Header("ë§µ ì‚¬ì´ì¦ˆ")]
     public int width;
     public int height;
-    [Header("³ëµå »çÀÌÁî")]
+    public Vector2 Offset;
+    [Header("ë…¸ë“œ ì‚¬ì´ì¦ˆ")]
     public float size;
-    [Header("Äİ¶óÀÌ´õ ·¹ÀÌ¾î"), SerializeField]
+    [Header("ì½œë¼ì´ë” ë ˆì´ì–´"), SerializeField]
     LayerMask layer;
 
     [SerializeField]
-    List<Node> NodeList;        //³ëµå¸®½ºÆ®
-    Node[,] NodeArr;              //³ëµå ¹è¿­
+    List<Node> NodeList;        //ë…¸ë“œë¦¬ìŠ¤íŠ¸
+    Node[,] NodeArr;              //ë…¸ë“œ ë°°ì—´
 
-    /// <summary>
-    /// ³ëµå¹è¿­ ¾ò±â
-    /// </summary>
-    /// <returns></returns>
-    public Node[,] GetNodeArr()
+    List<PathAI> pathAIList;
+
+	private void Awake()
+    {
+        pathAIList = new List<PathAI>(GetComponentsInChildren<PathAI>());
+        foreach (PathAI item in pathAIList)
+        {
+            item.Path = this;
+        }
+    }
+
+	/// <summary>
+	/// ë…¸ë“œë°°ì—´ ì–»ê¸°
+	/// </summary>
+	/// <returns></returns>
+	public Node[,] GetNodeArr()
     {
         if (NodeArr == null)
         {
@@ -45,20 +57,20 @@ public class PathFinder : MonoBehaviour
 
 
     /// <summary>
-    /// º¤ÅÍÀÇ ³ëµå ¾ò±â
+    /// ë²¡í„°ì˜ ë…¸ë“œ ì–»ê¸°
     /// </summary>
     /// <param name="_objpos"></param>
     /// <returns></returns>
     public Node GetObjectNode(Vector2 _objpos)
     {
-        //³ëµå ¹è¿­°ª °è»ê
+        //ë…¸ë“œ ë°°ì—´ê°’ ê³„ì‚°
         Vector2 tempvec = _objpos;
         tempvec = tempvec - NodeArr[0, 0].Pos;
         tempvec /= size;
         tempvec.x = Mathf.Round(tempvec.x);
         tempvec.y = Mathf.Round(tempvec.y);
 
-        //¹è¿­ ¹ş¾î³ª´ÂÁö È®ÀÎ
+        //ë°°ì—´ ë²—ì–´ë‚˜ëŠ”ì§€ í™•ì¸
         if (!NodeArr.isOverArr((int)tempvec.y, (int)tempvec.x))
             return null;
 
@@ -66,20 +78,20 @@ public class PathFinder : MonoBehaviour
     }
 
     /// <summary>
-    /// º¤ÅÍÀÇ ³ëµå ¾ò±â
+    /// ë²¡í„°ì˜ ë…¸ë“œ ì–»ê¸°
     /// </summary>
     /// <param name="_objpos"></param>
     /// <returns></returns>
     public Node GetObjectNodeMax(Vector2 _objpos)
     {
-        //³ëµå ¹è¿­°ª °è»ê
+        //ë…¸ë“œ ë°°ì—´ê°’ ê³„ì‚°
         Vector2 tempvec = _objpos;
         tempvec = tempvec - NodeArr[0, 0].Pos;
         tempvec /= size;
         tempvec.x = Mathf.Round(tempvec.x);
         tempvec.y = Mathf.Round(tempvec.y);
 
-        //¹è¿­ ¹ş¾î³ª´ÂÁö È®ÀÎ
+        //ë°°ì—´ ë²—ì–´ë‚˜ëŠ”ì§€ í™•ì¸
         if (tempvec.y >= NodeArr.GetLength(0))
         {
             tempvec.y = NodeArr.GetLength(0) - 1;
@@ -103,7 +115,7 @@ public class PathFinder : MonoBehaviour
     }
 
 
-    //¸Ê ½ºÄµ
+    //ë§µ ìŠ¤ìº”
     public void Scan()
     {
         if (NodeList == null)
@@ -124,15 +136,17 @@ public class PathFinder : MonoBehaviour
         }
         NodeArr = null;
         SetNodeCollider();
+#if UNITY_EDITOR
         SceneView.RepaintAll();
+#endif
     }
 
-    //Äİ¶óÀÌ´õ ¼¼ÆÃ
+    //ì½œë¼ì´ë” ì„¸íŒ…
     void SetNodeCollider()
     {
         GetNodeArr();
-        List<Collider2D> collider_list = new List<Collider2D>(FindObjectsOfType<Collider2D>());     //Äİ¶óÀÌ´õ ¸®½ºÆ®
-        collider_list = collider_list.FindAll((x) => (layer & 1 << x.gameObject.layer) == 1 << x.gameObject.layer); //ÇØ´ç ·¹ÀÌ¾î °É·¯³¿
+        List<Collider2D> collider_list = new List<Collider2D>(FindObjectsOfType<Collider2D>());     //ì½œë¼ì´ë” ë¦¬ìŠ¤íŠ¸
+        collider_list = collider_list.FindAll((x) => (layer & 1 << x.gameObject.layer) == 1 << x.gameObject.layer); //í•´ë‹¹ ë ˆì´ì–´ ê±¸ëŸ¬ëƒ„
 
         int[,] DirArr =
         {
@@ -150,17 +164,17 @@ public class PathFinder : MonoBehaviour
 
         foreach (Collider2D coll in collider_list)
         {
-            Vector2 startvec = coll.bounds.min;     //Äİ¶óÀÌ´õ ½ÃÀÛ À§Ä¡
-            Vector2 endvec = coll.bounds.max;       //Äİ¶óÀÌ´õ ³¡ À§Ä¡
+            Vector2 startvec = coll.bounds.min;     //ì½œë¼ì´ë” ì‹œì‘ ìœ„ì¹˜
+            Vector2 endvec = coll.bounds.max;       //ì½œë¼ì´ë” ë ìœ„ì¹˜
 
-            Node startnode = GetObjectNodeMax(startvec);   //Äİ¶óÀÌ´õ ½ÃÀÛ ³ëµå
-            Node endnode = GetObjectNodeMax(endvec);       //Äİ¶óÀÌ´õ ³¡ ³ëµå
+            Node startnode = GetObjectNodeMax(startvec);   //ì½œë¼ì´ë” ì‹œì‘ ë…¸ë“œ
+            Node endnode = GetObjectNodeMax(endvec);       //ì½œë¼ì´ë” ë ë…¸ë“œ
 
-            //ÇØ´ç ³ëµå°¡ ÀÖ´ÂÁö È®ÀÎ
+            //í•´ë‹¹ ë…¸ë“œê°€ ìˆëŠ”ì§€ í™•ì¸
             if (startnode != null
                 && endnode != null)
             {
-                //º® Ã¼Å©
+                //ë²½ ì²´í¬
                 for (int i = startnode.Y; i <= endnode.Y; i++)
                 {
                     for (int j = startnode.X; j <= endnode.X; j++)
@@ -177,41 +191,33 @@ public class PathFinder : MonoBehaviour
                             {
                                 NodeList[(i * width) + j].IsColl = true;
                             }
-
-                            /*if (coll.OverlapPoint(NodeList[(i * width) + j].Pos))
-                            {
-                                NodeList[(i * width) + j].IsColl = true;
-                            }*/
                         }
                     }
                 }
-
             }
         }
-
-
     }
 
-    //¸Ê º¤ÅÍ ¾ò±â
+    //ë§µ ë²¡í„° ì–»ê¸°
     List<Vector2> GetAllVector()
     {
         List<Vector2> temp_vec = new List<Vector2>();
 
-        Vector2 totalsize = new Vector2(width, height);     //¸Ê »çÀÌÁî
-        totalsize *= size;      //³ëµå »çÀÌÁî °ö
-        totalsize *= 0.5f;      //¹İÀ¸·Î ³ª´®
-        Vector2 startpos = new Vector2(-totalsize.x, -totalsize.y);     //½ÃÀÛ À§Ä¡
-        Vector2 cutpos = new Vector2(startpos.x, startpos.y);           //ÇöÀç À§Ä¡
-        float possize = size * 0.5f;        //³ëµå »çÀÌÁî ¹İ
+        Vector2 totalsize = new Vector2(width, height);     //ë§µ ì‚¬ì´ì¦ˆ
+        totalsize *= size;      //ë…¸ë“œ ì‚¬ì´ì¦ˆ ê³±
+        totalsize *= 0.5f;      //ë°˜ìœ¼ë¡œ ë‚˜ëˆ”
+        Vector2 startpos = new Vector2(-totalsize.x, -totalsize.y);     //ì‹œì‘ ìœ„ì¹˜
+        Vector2 cutpos = new Vector2(startpos.x, startpos.y);           //í˜„ì¬ ìœ„ì¹˜
+        float possize = size * 0.5f;        //ë…¸ë“œ ì‚¬ì´ì¦ˆ ë°˜
 
         for (int i = 0; i < height; i++)
         {
             for (int j = 0; j < width; j++)
             {
-                temp_vec.Add(new Vector2(cutpos.x + possize, cutpos.y + possize) + (Vector2)this.transform.position);   //ÇöÀç À§Ä¡ + ³ëµå »çÀÌÁî ¹İ + ÀÌ ¿ÀºêÁ§Æ® À§Ä¡
-                cutpos.Set(cutpos.x + size, cutpos.y);  //x + ³ëµå »çÀÌÁî
+                temp_vec.Add(new Vector2(cutpos.x + possize, cutpos.y + possize) + (Vector2)this.transform.position + Offset);   //í˜„ì¬ ìœ„ì¹˜ + ë…¸ë“œ ì‚¬ì´ì¦ˆ ë°˜ + ì´ ì˜¤ë¸Œì íŠ¸ ìœ„ì¹˜
+                cutpos.Set(cutpos.x + size, cutpos.y);  //x + ë…¸ë“œ ì‚¬ì´ì¦ˆ
             }
-            cutpos.Set(startpos.x, cutpos.y + size);    //y + ³ëµå »çÀÌÁî
+            cutpos.Set(startpos.x, cutpos.y + size);    //y + ë…¸ë“œ ì‚¬ì´ì¦ˆ
         }
 
         return temp_vec;
@@ -237,14 +243,12 @@ public class PathFinder : MonoBehaviour
         foreach (Node item in NodeList)
         {
             if (item.IsColl)
-                Gizmos.color = new Color(0.0f, 1.0f, 0.0f, 0.2f);   //³ì»ö
+                Gizmos.color = new Color(0.0f, 1.0f, 0.0f, 0.2f);   //ë…¹ìƒ‰
             else
-                Gizmos.color = new Color(0.0f, 0.0f, 1.0f, 0.2f);   //ÆÄ¶õ»ö
+                Gizmos.color = new Color(0.0f, 0.0f, 1.0f, 0.2f);   //íŒŒë€ìƒ‰
             Gizmos.DrawCube(item.Pos, new Vector2(size, size));
         }
     }
-    #endregion
-
 
     void OnDrawGizmos()
     {
@@ -254,5 +258,5 @@ public class PathFinder : MonoBehaviour
             DrawNode();
         }
     }
-
+    #endregion
 }

@@ -5,14 +5,14 @@ using UnityEngine;
 [System.Serializable]
 public class Node
 {
-    public Node Parent;     // ºÎ¸ğ
-    public Vector2 Pos;     // À§Ä¡
-    public bool IsColl;        // º® È®ÀÎ
-    public int X, Y;           // ¹è¿­ À§Ä¡
+    public Node Parent;     // ë¶€ëª¨
+    public Vector2 Pos;     // ìœ„ì¹˜
+    public bool IsColl;        // ë²½ í™•ì¸
+    public int X, Y;           // ë°°ì—´ ìœ„ì¹˜
 
-    public int G { get; private set; }           // ½ÃÀÛÁ¡ºÎÅÍ ÀÌµ¿ °ª
-    public int H { get; private set; }           // ¸ñÀûÁö±îÁö ¿¹»ó °ª
-    public int F { get { return G + H; } }  //ºñ¿ë
+    public int G { get; private set; }           // ì‹œì‘ì ë¶€í„° ì´ë™ ê°’
+    public int H { get; private set; }           // ëª©ì ì§€ê¹Œì§€ ì˜ˆìƒ ê°’
+    public int F { get { return G + H; } }  //ë¹„ìš©
 
     public Node(Node node)
     {
@@ -33,46 +33,46 @@ public class Node
     }
 
     /// <summary>
-    /// ³ëµå ¼¼ÆÃ, H°ª °è»êO
+    /// ë…¸ë“œ ì„¸íŒ…, Hê°’ ê³„ì‚°O
     /// </summary>
-    /// <param name="parent">ºÎ¸ğ</param>
-    /// <param name="target">¸ñÇ¥ ³ëµå</param>
+    /// <param name="parent">ë¶€ëª¨</param>
+    /// <param name="target">ëª©í‘œ ë…¸ë“œ</param>
     public void SetNode(Node parent, Node target)
     {
         this.Parent = parent;
-        CalG();                // G°ª °è»ê
-        CalH(target);  // H°ª °è»ê
+        CalG();                // Gê°’ ê³„ì‚°
+        CalH(target);  // Hê°’ ê³„ì‚°
     }
 
     /// <summary>
-    /// ³ëµå¼¼ÆÃ, H°ª °è»êX
+    /// ë…¸ë“œì„¸íŒ…, Hê°’ ê³„ì‚°X
     /// </summary>
-    /// <param name="parent">ºÎ¸ğ</param>
+    /// <param name="parent">ë¶€ëª¨</param>
     public void SetNode(Node parent)
     {
         this.Parent = parent;
-        CalG();                // G°ª °è»ê
+        CalG();                // Gê°’ ê³„ì‚°
     }
 
     void CalG()
     {
-        //ºÎ¸ğ³ëµå·Î ºÎÅÍ ÀÌµ¿ÇÑ °ª ¾Ë¾Æ³»±â
+        //ë¶€ëª¨ë…¸ë“œë¡œ ë¶€í„° ì´ë™í•œ ê°’ ì•Œì•„ë‚´ê¸°
         int disX = Mathf.Abs(Parent.X - X);
         int disY = Mathf.Abs(Parent.Y - Y);
 
-        int value = 10; //ºñ¿ë
-        if (disX == 0 && disY == 0)         //ÀÌµ¿X
+        int value = 10; //ë¹„ìš©
+        if (disX == 0 && disY == 0)         //ì´ë™X
             value = 0;
-        else if (disX == 1 && disY == 1)    //´ë°¢¼±
+        else if (disX == 1 && disY == 1)    //ëŒ€ê°ì„ 
             value = 14;
 
 
-        G = Parent.G + value;   //ºÎ¸ğºñ¿ë + ºñ¿ë
+        G = Parent.G + value;   //ë¶€ëª¨ë¹„ìš© + ë¹„ìš©
     }
 
     void CalH(Node _target)
     {
-        //¸ñÀûÁö ¿¹»ó°ª ¾Ë¾Æ³»±â
+        //ëª©ì ì§€ ì˜ˆìƒê°’ ì•Œì•„ë‚´ê¸°
         int disX = Mathf.Abs(_target.X - X);
         int disY = Mathf.Abs(_target.Y - Y);
 

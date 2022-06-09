@@ -3,17 +3,16 @@ using UnityEngine;
 
 public class PathAI : MonoBehaviour
 {
-    [SerializeField]
-    PathFinder Path;
-    public Transform FollowObj;       // ¸ñÇ¥ ¿ÀºêÁ§Æ®
+    public PathFinder Path;
+    public Transform FollowObj;       // ëª©í‘œ ì˜¤ë¸Œì íŠ¸
 
-    public List<Node> FinalNodeList;        //±æÃ£±â ³ëµå ¸®½ºÆ®
-    public int NodeInx;    // ¸®½ºÆ® ÀÎµ¦½º
+    public List<Node> FinalNodeList;        //ê¸¸ì°¾ê¸° ë…¸ë“œ ë¦¬ìŠ¤íŠ¸
+    public int NodeInx;    // ë¦¬ìŠ¤íŠ¸ ì¸ë±ìŠ¤
 
-    Node startNode, targetNode, curNode;     // ½ÃÀÛ, ¸ñÇ¥, ÇöÀç ³ëµå
+    Node startNode, targetNode, curNode;     // ì‹œì‘, ëª©í‘œ, í˜„ì¬ ë…¸ë“œ
     List<Node> openList, closedList;
     Node[,] nodeArr;
-    public bool IsFinding { get; private set; }     //±æÃ£±â È®ÀÎ
+    public bool IsFinding { get; private set; }     //ê¸¸ì°¾ê¸° í™•ì¸
 
     private void Start()
     {
@@ -26,7 +25,7 @@ public class PathAI : MonoBehaviour
         NodeInx = 0;
         nodeArr = Path.GetNodeArr();
 
-        //¸®½ºÆ® ÃÊ±âÈ­
+        //ë¦¬ìŠ¤íŠ¸ ì´ˆê¸°í™”
         if (openList == null)
             openList = new List<Node>();
         else
@@ -49,17 +48,17 @@ public class PathAI : MonoBehaviour
         if (targetNode == null || startNode == null)
             return false;
 
-        openList.Add(startNode);        // ½ÃÀÛ ³ëµå ¿ÀÇÂ¸®½ºÆ®¿¡ Ãß°¡
+        openList.Add(startNode);        // ì‹œì‘ ë…¸ë“œ ì˜¤í”ˆë¦¬ìŠ¤íŠ¸ì— ì¶”ê°€
 
 
         while (true)
         {
-            curNode = MinF(openList);   // °¡Àå ÀÛÀº F°ª Ã£±â
+            curNode = MinF(openList);   // ê°€ì¥ ì‘ì€ Fê°’ ì°¾ê¸°
 
-            openList.Remove(curNode);   // ÇöÀç ³ëµå ¿ÀÇÂ¸®½ºÆ®¿¡¼­ »èÁ¦
-            closedList.Add(curNode);     // ´İÈù ¸®½ºÆ®¿¡ Ãß°¡
+            openList.Remove(curNode);   // í˜„ì¬ ë…¸ë“œ ì˜¤í”ˆë¦¬ìŠ¤íŠ¸ì—ì„œ ì‚­ì œ
+            closedList.Add(curNode);     // ë‹«íŒ ë¦¬ìŠ¤íŠ¸ì— ì¶”ê°€
 
-            // ÁÖº¯ ³ëµå È®ÀÎ
+            // ì£¼ë³€ ë…¸ë“œ í™•ì¸
             int[,] nodeFindArr =
             {
                 { 0, 1 },
@@ -76,8 +75,8 @@ public class PathAI : MonoBehaviour
                 AddOpenList(nodeFindArr[i ,0], nodeFindArr[i, 1]);
             }
 
-            // ´İÈù ¸®½ºÆ®¿¡ ¸ñÇ¥ ³ëµå°¡ ÀÖ°Å³ª
-            // ¿ÀÇÂ ¸®½ºÆ®¿¡ ³ëµå°¡ ¾øÀ¸¸é ¹İº¹ Á¾·á
+            // ë‹«íŒ ë¦¬ìŠ¤íŠ¸ì— ëª©í‘œ ë…¸ë“œê°€ ìˆê±°ë‚˜
+            // ì˜¤í”ˆ ë¦¬ìŠ¤íŠ¸ì— ë…¸ë“œê°€ ì—†ìœ¼ë©´ ë°˜ë³µ ì¢…ë£Œ
             if (closedList.Contains(targetNode))
                 break;
             if (openList.Count <= 0)
@@ -85,7 +84,7 @@ public class PathAI : MonoBehaviour
 
         }
 
-        // ³ëµåÀÇ ºÎ¸ğ¸¦ µû¶ó°¡¼­ ±æÃ£±â ¸®½ºÆ® »ı¼º
+        // ë…¸ë“œì˜ ë¶€ëª¨ë¥¼ ë”°ë¼ê°€ì„œ ê¸¸ì°¾ê¸° ë¦¬ìŠ¤íŠ¸ ìƒì„±
         Node finalnode = targetNode;
         while (true)
         {
@@ -108,45 +107,45 @@ public class PathAI : MonoBehaviour
         return IsFinding;
     }
 
-    //¹è¿­ Ã¼Å©
+    //ë°°ì—´ ì²´í¬
     bool AddOpenList(int inx_y, int inx_x)
     {
-        // ¹è¿­ ³Ñ´ÂÁö È®ÀÎ
+        // ë°°ì—´ ë„˜ëŠ”ì§€ í™•ì¸
         if (nodeArr.isOverArr(curNode.Y + inx_y, curNode.X + inx_x))
         {
-            // ÁÖº¯ ³ëµå º® Ã¼Å©
+            // ì£¼ë³€ ë…¸ë“œ ë²½ ì²´í¬
             if (nodeArr[curNode.Y + inx_y, curNode.X].IsColl
                 && nodeArr[curNode.Y, curNode.X + inx_x].IsColl)
                 return false;
 
             Node addNode = nodeArr[curNode.Y + inx_y, curNode.X + inx_x];
 
-            // º®
+            // ë²½
             if (addNode.IsColl)
                 return false;
 
-            // ÀÌ¹Ì ´İÈù ¸®½ºÆ®¿¡ ÀÖÀ½
+            // ì´ë¯¸ ë‹«íŒ ë¦¬ìŠ¤íŠ¸ì— ìˆìŒ
             if (closedList.Contains(addNode))
                 return false;
 
-            // ¿ÀÇÂ ¸®½ºÆ®¿¡ ÀÖ´ÂÁö È®ÀÎ
+            // ì˜¤í”ˆ ë¦¬ìŠ¤íŠ¸ì— ìˆëŠ”ì§€ í™•ì¸
             if (openList.Contains(addNode))
             {
-                // ÇöÀç ³ëµå¸¦ ÀÌ¿ëÇÑ °æ·Î
+                // í˜„ì¬ ë…¸ë“œë¥¼ ì´ìš©í•œ ê²½ë¡œ
                 Node tempNode = new Node(addNode);
                 tempNode.SetNode(curNode);
 
-                //´õ ÀÛÀº G°ª À¸·Î Ãß°¡
+                //ë” ì‘ì€ Gê°’ ìœ¼ë¡œ ì¶”ê°€
                 if (tempNode.G < addNode.G)
                 {
-                    // ÇöÀç ³ëµå¸¦ ºÎ¸ğ·Î ÁöÁ¤, g°ª °è»ê
+                    // í˜„ì¬ ë…¸ë“œë¥¼ ë¶€ëª¨ë¡œ ì§€ì •, gê°’ ê³„ì‚°
                     addNode.SetNode(curNode);
                 }
             }
             else
             {
-                //¾øÀ¸¸é
-                openList.Add(addNode);     //Ãß°¡
+                //ì—†ìœ¼ë©´
+                openList.Add(addNode);     //ì¶”ê°€
                 addNode.SetNode(curNode, targetNode);
             }
 
@@ -155,7 +154,7 @@ public class PathAI : MonoBehaviour
         return false;
     }
 
-    //°¡Àå ÀÛÀº FÃ£±â
+    //ê°€ì¥ ì‘ì€ Fì°¾ê¸°
     Node MinF(List<Node> nodeList)
     {
         Node minNode = nodeList[0];
